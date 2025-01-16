@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'graalvm'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Generate JaCoCo badge
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        badges-directory: badges
+        coverage-badge-filename: instructions.svg
+        coverage-label: 'Coverage:instructions'
+        generate-branches-badge: true
+        branches-badge-filename: branches.svg
+        branches-label: 'Coverage:branches'
+        on-missing-report: quiet
+
+    - name: Upload coverage badge
+      if: ${{ hashFiles('badges') != '' }}
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        clean: true
+        folder: 'badges'
+        target-folder: 'badges'
