@@ -36,8 +36,11 @@ jobs:
 
     - name: Upload coverage badge
       if: ${{ hashFiles('badges') != '' }}
-      uses: JamesIves/github-pages-deploy-action@v4
+      uses: peaceiris/actions-gh-pages@v4
+      continue-on-error: true
       with:
-        clean: true
-        folder: 'badges'
-        target-folder: 'badges'
+        deploy_key: ${{ secrets.GH_PAGES_DEPLOY_KEY }}
+        external_repository: will8ug/will8ug.github.io
+        publish_dir: ./badges
+        publish_branch: main
+        destination_dir: args-parser/badges
